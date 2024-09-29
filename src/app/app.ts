@@ -1,9 +1,9 @@
 import express from 'express';
+import 'express-async-errors';
+import notFoundHandler from '../errors/not-found-handler';
 import globalErrorHandler from './global-error-handler';
 import middlewares from './middlewares';
 import routes from './routes';
-import notFoundHandler from '../errors/not-found-handler';
-import 'express-async-errors';
 
 const app = express();
 
@@ -11,7 +11,7 @@ const app = express();
 app.use(middlewares);
 
 // Use routes
-app.use(routes);
+app.use('/api/v1', routes);
 
 // Root route
 app.get('/', (_req, res) => {

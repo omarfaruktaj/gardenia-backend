@@ -19,6 +19,10 @@ const categorySchema = new Schema<CategoryType>(
       minlength: [10, 'Description must be at least 10 characters long.'],
       maxlength: [200, 'Description cannot exceed 200 characters.'],
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

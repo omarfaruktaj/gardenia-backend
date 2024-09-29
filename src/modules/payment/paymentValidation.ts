@@ -10,6 +10,7 @@ export const PaymentSchema = z.object({
   description: z.string().optional(),
   transactionID: z.string().min(1, 'Transaction ID is required.'),
   paymentProvider: z.string().optional(),
+  isDeleted: z.boolean().default(false),
 });
 
 export type PaymentType = z.infer<typeof PaymentSchema>;

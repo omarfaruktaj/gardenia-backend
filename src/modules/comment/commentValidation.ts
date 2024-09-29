@@ -16,6 +16,7 @@ export const CommentSchema = z.object({
   replyTo: z.array(ObjectIdSchema).optional(),
 
   replies: z.array(ObjectIdSchema).optional(),
+  isDeleted: z.boolean().default(false),
 });
 
 export type CommentType = z.infer<typeof CommentSchema>;

@@ -27,6 +27,10 @@ const commentSchema = new Schema<CommentType>(
       type: [mongoose.Schema.Types.ObjectId],
       ref: 'Comment',
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

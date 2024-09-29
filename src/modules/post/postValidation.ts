@@ -23,6 +23,7 @@ export const PostSchema = z.object({
   votes: z.number().default(0).optional(),
 
   premium: z.boolean().default(false).optional(),
+  isDeleted: z.boolean().default(false),
 });
 
 export type PostType = z.infer<typeof PostSchema>;

@@ -10,6 +10,7 @@ export const CategorySchema = z.object({
     .string()
     .max(500, { message: 'Description must be no more than 500 characters.' })
     .optional(),
+  isDeleted: z.boolean().default(false),
 });
 
 export type CategoryType = z.infer<typeof CategorySchema>;

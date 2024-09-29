@@ -1,3 +1,4 @@
+import bcrypt from 'bcrypt';
 import { model, Schema } from 'mongoose';
 import isEmail from 'validator/lib/isEmail';
 import { UserType } from './userValidation';
@@ -11,6 +12,14 @@ const userSchema = new Schema<UserType>(
       maxlength: [50, 'Name cannot exceed 50 characters.'],
       trim: true,
     },
+    username: {
+      type: String,
+      required: [true, 'Username is required.'],
+      minlength: [1, 'Username must be at least 1 character long.'],
+      maxlength: [30, 'Username cannot exceed 30 characters.'],
+      unique: true,
+      trim: true,
+    },
     email: {
       type: String,
       required: [true, 'Email is required.'],
@@ -19,18 +28,18 @@ const userSchema = new Schema<UserType>(
       lowercase: true,
       validate: {
         validator: (value: string) => isEmail(value),
-        message: 'Invalid email address',
+        message: 'Invalid email address.',
       },
     },
     password: {
       type: String,
       required: [true, 'Password is required.'],
-      minlength: [6, 'Password must be at least 6 characters long.'],
+      minlength: [8, 'Password must be at least 8 characters long.'],
       select: false,
     },
     bio: {
       type: String,
-      maxlength: [250, 'Bio cannot exceed 250 characters.'],
+      maxlength: [300, 'Bio cannot exceed 300 characters.'],
     },
     avatar: {
       type: String,
@@ -47,10 +56,6 @@ const userSchema = new Schema<UserType>(
       type: [{ type: Schema.Types.ObjectId, ref: 'User' }],
       default: [],
     },
-    posts: {
-      type: [{ type: Schema.Types.ObjectId, ref: 'Post' }],
-      default: [],
-    },
     role: {
       type: String,
       enum: ['user', 'admin'],
@@ -62,9 +67,28 @@ const userSchema = new Schema<UserType>(
     passwordResetTokenExpire: {
       type: Date,
     },
+    passwordChangedAt: { type: Date },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );
+
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) return next();
+
+  this.password = await bcrypt.hash(this.password, 12);
+
+  next();
+});
+userSchema.pre('save', async function (next) {
+  if (!this.isModified('password') || this.isNew) return next();
+
+  this.passwordChangedAt = new Date();
+  next();
+});
 
 const User = model<UserType>('User', userSchema);
 export default User;

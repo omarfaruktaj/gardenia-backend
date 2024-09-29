@@ -2,6 +2,7 @@ import http from 'http';
 import app from './app/app';
 import connectDB from './config/db';
 import env from './config/env';
+import { generateUniqueUsername } from './lib/generateUniqueUsername';
 
 const server = http.createServer(app);
 
@@ -12,6 +13,7 @@ async function main() {
       console.log(`Server is listening on port ${env.PORT}`);
       console.info(`Go to home: http://localhost:${env.PORT}/`);
     });
+    console.log(await generateUniqueUsername('omar Faruk'));
   } catch (error) {
     console.log(error);
   }

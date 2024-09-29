@@ -38,6 +38,10 @@ const postSchema = new Schema<PostType>(
       type: Boolean,
       default: false,
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

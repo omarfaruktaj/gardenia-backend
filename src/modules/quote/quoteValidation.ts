@@ -7,6 +7,7 @@ export const QuoteSchema = z.object({
     .min(1, 'Text is required.')
     .max(500, 'Quote text must not exceed 500 characters.'),
   author: ObjectIdSchema,
+  isDeleted: z.boolean().default(false),
 });
 
 export type QuoteType = z.infer<typeof QuoteSchema>;

@@ -14,6 +14,10 @@ const QuoteSchema: Schema = new Schema<QuoteType>(
       required: [true, 'Please provide the user ID.'],
       ref: 'User',
     },
+    isDeleted: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

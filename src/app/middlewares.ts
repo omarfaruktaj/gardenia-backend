@@ -1,7 +1,8 @@
 import cors from 'cors';
-import helmet from 'helmet';
 import express from 'express';
+import helmet from 'helmet';
+import morgan from 'morgan';
 
-const middlewares = [cors(), helmet(), express()];
+const middlewares = [cors(), helmet(), morgan('tiny'), express.json()];
 
 export default middlewares;
