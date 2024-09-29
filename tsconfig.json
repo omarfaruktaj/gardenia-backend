@@ -1,0 +1,41 @@
+{
+  "compilerOptions": {
+    /* Basic Options */
+    "target": "ES2020", // Target ECMAScript version
+    "module": "CommonJS", // CommonJS for Node.js
+    "lib": ["ES2020"], // Include relevant libraries
+    "allowJs": true, // Allow JavaScript files
+    "checkJs": false, // Disable type checking in JavaScript files
+    "outDir": "./dist", // Redirect output to dist folder
+    "rootDir": "./src", // Source directory
+
+    /* Strict Type-Checking Options */
+    "strict": true, // Enable all strict type checking options
+    "noImplicitAny": true, // Raise error on 'any' types
+    "strictNullChecks": true, // Enable strict null checks
+    "strictFunctionTypes": true, // Enable strict function types
+    "strictBindCallApply": true, // Enable strict bind, call, and apply
+
+    /* Module Resolution Options */
+    "moduleResolution": "node", // Use Node.js module resolution
+    "esModuleInterop": true, // Enable interoperability between CommonJS and ES Modules
+    "forceConsistentCasingInFileNames": true, // Ensure consistent casing in module imports
+    "resolveJsonModule": true, // Include modules from .json files
+    "skipLibCheck": true, // Skip type checking of declaration files
+
+    /* Source Map Options */
+    "sourceMap": true, // Create source map files for debugging
+
+    /* Additional Options */
+    "noEmit": false, // Emit output files
+    "isolatedModules": true, // Ensure each file is treated as a module
+    "allowSyntheticDefaultImports": true, // Allow default imports from modules with no default export
+    "noUnusedLocals": true, // Report errors on unused local variables
+    "noUnusedParameters": true, // Report errors on unused parameters
+    "noFallthroughCasesInSwitch": true, // Report errors for fallthrough cases in switch statements
+    "experimentalDecorators": true, // Enable experimental support for decorators
+    "emitDecoratorMetadata": true // Emit design-type metadata for decorated classes
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
+}

@@ -1,0 +1,58 @@
+{
+  "name": "node-app",
+  "description": "",
+  "version": "1.0.0",
+  "main": "dist/server.js",
+  "author": "omar",
+  "scripts": {
+    "build": "tsc",
+    "start": "node --env-file=.env dist/server.js",
+    "dev": "ts-node-dev --env-file=.env src/server.ts",
+    "lint": "eslint src --fix",
+    "format": "prettier src --write",
+    "lint:check": "eslint src",
+    "format:check": "prettier src --check",
+    "postinstall": "husky"
+  },
+  "dependencies": {
+    "@apidevtools/swagger-parser": "^10.1.0",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "envalid": "^8.0.0",
+    "express": "^4.21.0",
+    "express-async-errors": "^3.1.1",
+    "helmet": "^7.1.0",
+    "http-status": "^1.7.4",
+    "js-yaml": "^4.1.0",
+    "mongoose": "^8.6.2",
+    "yaml": "^2.5.1",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.10.0",
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/eslint": "^9.6.1",
+    "@types/express": "^4.17.21",
+    "@types/lint-staged": "^13.3.0",
+    "@types/yamljs": "^0",
+    "eslint": "^9.10.0",
+    "globals": "^15.9.0",
+    "husky": "^9.1.6",
+    "lint-staged": "^15.2.10",
+    "prettier": "3.3.3",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.5.0"
+  },
+  "lint-staged": {
+    "*.{ts,tsx}": [
+      "eslint --fix",
+      "prettier --write --ignore-unknown"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write --ignore-unknown"
+    ]
+  },
+  "packageManager": "yarn@4.3.1"
+}
