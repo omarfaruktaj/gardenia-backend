@@ -48,5 +48,17 @@ export const UserSchema = z.object({
   passwordResetTokenExpire: z.date().optional(),
   isDeleted: z.boolean().default(false).optional(),
 });
+export const signInSchema = z.object({
+  email: z
+    .string()
+    .email({ message: 'Invalid email address.' })
+    .max(100, { message: 'Email must be less than 100 characters.' }),
+
+  password: z
+    .string()
+    .min(8, { message: 'Password must be at least 8 characters long.' })
+    .max(100, { message: 'Password must be less than 100 characters.' }),
+});
 
 export type UserType = z.infer<typeof UserSchema>;
+export type SignInSchemaType = z.infer<typeof signInSchema>;

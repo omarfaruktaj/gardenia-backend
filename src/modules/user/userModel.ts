@@ -1,9 +1,11 @@
 import bcrypt from 'bcrypt';
 import { model, Schema } from 'mongoose';
 import isEmail from 'validator/lib/isEmail';
+import makeFieldsPrivatePlugin from '../../lib/privateField';
+import { UserModel } from './userInterface';
 import { UserType } from './userValidation';
 
-const userSchema = new Schema<UserType>(
+const userSchema = new Schema<UserType, UserModel>(
   {
     name: {
       type: String,
@@ -76,6 +78,8 @@ const userSchema = new Schema<UserType>(
   { timestamps: true }
 );
 
+userSchema.plugin(makeFieldsPrivatePlugin, ['password']);
+
 userSchema.pre('save', async function (next) {
   if (!this.isModified('password')) return next();
 
@@ -90,5 +94,11 @@ userSchema.pre('save', async function (next) {
   next();
 });
 
-const User = model<UserType>('User', userSchema);
+userSchema.statics.correctPassword = async function (
+  candidatePassword,
+  userPassword
+) {
+  return await bcrypt.compare(candidatePassword, userPassword);
+};
+const User = model<UserType, UserModel>('User', userSchema);
 export default User;
