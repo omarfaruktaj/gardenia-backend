@@ -25,6 +25,7 @@ const postSchema = new Schema<IPost>(
     },
     author: {
       type: mongoose.Schema.Types.ObjectId,
+      ref: 'User',
       required: [
         true,
         "Author ID is required. Please provide the author's ID.",
