@@ -7,10 +7,10 @@ export interface IUser {
   bio?: string;
   avatar?: string;
   isVerified: boolean;
-  followers: Array<ObjectId>;
-  following: Array<ObjectId>;
-  posts: Array<ObjectId>;
+  followers?: Array<ObjectId>;
+  following?: Array<ObjectId>;
+  posts?: Array<ObjectId>;
   role: 'user' | 'admin';
   passwordResetToken?: string;
-  passwordResetTokenExpire: Date;
+  passwordResetTokenExpire?: Date;
 }
