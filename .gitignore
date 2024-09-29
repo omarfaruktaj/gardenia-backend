@@ -51,4 +51,7 @@ data/
 
 # Optional: Cache files 
 # .yarn/cache
+
+# local other
 package.deps.json
+others/

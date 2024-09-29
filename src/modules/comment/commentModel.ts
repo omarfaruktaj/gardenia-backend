@@ -1,21 +1,21 @@
 import mongoose, { model, Schema } from 'mongoose';
-import { IComment } from './commentInterface';
+import { CommentType } from './commentValidation';
 
-const commentSchema = new Schema<IComment>(
+const commentSchema = new Schema<CommentType>(
   {
     post: {
       type: mongoose.Schema.Types.ObjectId,
-      required: [true, 'Post ID is required. Please provide the post ID.'],
+      required: [true, 'Please provide the post ID.'],
       ref: 'Post',
     },
     user: {
       type: mongoose.Schema.Types.ObjectId,
-      required: [true, 'User ID is required. Please provide the user ID.'],
+      required: [true, 'Please provide the user ID.'],
       ref: 'User',
     },
     content: {
       type: String,
-      required: [true, 'Content is required. Please provide your comment.'],
+      required: [true, 'Please provide your comment.'],
       minlength: [1, 'Content must be at least 1 character long.'],
       maxlength: [1000, 'Content cannot exceed 1000 characters.'],
     },
@@ -33,6 +33,6 @@ const commentSchema = new Schema<IComment>(
   }
 );
 
-const Comment = model<IComment>('Comment', commentSchema);
+const Comment = model<CommentType>('Comment', commentSchema);
 
 export default Comment;

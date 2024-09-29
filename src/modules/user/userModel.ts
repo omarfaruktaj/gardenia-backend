@@ -1,8 +1,8 @@
 import { model, Schema } from 'mongoose';
 import isEmail from 'validator/lib/isEmail';
-import { IUser } from './userInterface';
+import { UserType } from './userValidation';
 
-const userSchema = new Schema<IUser>(
+const userSchema = new Schema<UserType>(
   {
     name: {
       type: String,
@@ -66,5 +66,5 @@ const userSchema = new Schema<IUser>(
   { timestamps: true }
 );
 
-const User = model<IUser>('User', userSchema);
+const User = model<UserType>('User', userSchema);
 export default User;

@@ -1,24 +1,22 @@
 import mongoose, { model, Schema } from 'mongoose';
-import { IPost } from './postInterface';
+import { PostType } from './postValidation';
 
-const postSchema = new Schema<IPost>(
+const postSchema = new Schema<PostType>(
   {
     title: {
       type: String,
-      required: [true, 'Title is required. Please provide a title.'],
+      required: [true, 'Please provide a title.'],
       minlength: [5, 'Title must be at least 5 characters long.'],
       maxlength: [100, 'Title cannot exceed 100 characters.'],
     },
     content: {
       type: String,
-      required: [
-        true,
-        'Content is required. Please provide the content of the post.',
-      ],
+      required: [true, 'Please provide the content of the post.'],
       minlength: [20, 'Content must be at least 20 characters long.'],
     },
     category: {
-      type: String,
+      type: mongoose.Types.ObjectId,
+      ref: 'Category',
     },
     images: {
       type: [String],
@@ -46,6 +44,6 @@ const postSchema = new Schema<IPost>(
   }
 );
 
-const Post = model<IPost>('Post', postSchema);
+const Post = model<PostType>('Post', postSchema);
 
 export default Post;
