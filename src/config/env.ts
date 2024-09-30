@@ -20,6 +20,9 @@ const env = cleanEnv(process.env, {
   EMAIL_PASSWORD: str(),
   EMAIL_FROM: str(),
   RESET_TOKEN_CLIENT_URL: str(),
+  CLOUDINARY_CLOUD_NAME: str(),
+  CLOUDINARY_API_KEY: str(),
+  CLOUDINARY_API_SECRET: str(),
 });
 
 export default env;

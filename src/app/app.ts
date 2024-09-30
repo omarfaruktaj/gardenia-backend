@@ -1,9 +1,9 @@
 import express from 'express';
-import 'express-async-errors';
 import notFoundHandler from '../errors/not-found-handler';
 import globalErrorHandler from './global-error-handler';
 import middlewares from './middlewares';
 import routes from './routes';
+import 'express-async-errors';
 
 const app = express();
 
