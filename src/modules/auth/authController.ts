@@ -44,7 +44,7 @@ export const signupController: RequestHandler = async (req, res) => {
     secure: req.secure,
   });
 
-  res.json(
+  res.status(httpStatus.CREATED).json(
     new APIResponse(httpStatus.CREATED, 'User registered Successfully.', {
       accessToken,
       refreshToken,
@@ -82,8 +82,8 @@ export const signInController: RequestHandler = async (req, res) => {
     secure: req.secure,
   });
 
-  res.json(
-    new APIResponse(httpStatus.CREATED, 'User signIn Successfully.', {
+  res.status(httpStatus.OK).json(
+    new APIResponse(httpStatus.OK, 'User signIn Successfully.', {
       accessToken,
       refreshToken,
       user,
@@ -98,21 +98,19 @@ export const signOutController: RequestHandler = async (req, res) => {
     secure: req.secure,
   });
 
-  res.json(
-    new APIResponse(httpStatus.CREATED, 'User signOut Successfully.', null)
-  );
+  res
+    .status(httpStatus.OK)
+    .json(new APIResponse(httpStatus.OK, 'User signOut Successfully.', null));
 };
 
 export const forgotPasswordController: RequestHandler = async (req, res) => {
   await forgotPasswordService(req.body);
 
-  res.json(
-    new APIResponse(
-      httpStatus.CREATED,
-      'Email sent Please check your email',
-      null
-    )
-  );
+  res
+    .status(httpStatus.OK)
+    .json(
+      new APIResponse(httpStatus.OK, 'Email sent Please check your email', null)
+    );
 };
 
 export const resetPasswordController: RequestHandler = async (req, res) => {
@@ -148,7 +146,7 @@ export const resetPasswordController: RequestHandler = async (req, res) => {
     secure: req.secure,
   });
 
-  res.json(
+  res.status(httpStatus.CREATED).json(
     new APIResponse(httpStatus.CREATED, 'Password reset successful.', {
       accessToken,
       refreshToken,
@@ -202,7 +200,7 @@ export const passwordChangeController = async (
     secure: req.secure,
   });
 
-  res.json(
+  res.status(httpStatus.CREATED).json(
     new APIResponse(httpStatus.CREATED, 'Password changed Successfully', {
       accessToken,
       refreshToken,
@@ -250,7 +248,7 @@ export const refreshTokenController = async (
     secure: req.secure,
   });
 
-  res.json(
+  res.status(httpStatus.CREATED).json(
     new APIResponse(httpStatus.CREATED, 'Password changed Successfully', {
       accessToken,
       refreshToken,
