@@ -8,6 +8,7 @@ import { USER_ROLE } from '../user/userConstants';
 import {
   changePasswordService,
   forgotPasswordService,
+  refreshTokenService,
   resetPasswordService,
   signInService,
   signupService,
@@ -171,7 +172,7 @@ export const passwordChangeController = async (
   const user = await changePasswordService({
     currentPassword,
     newPassword,
-    userId,
+    userId: String(userId),
   });
 
   const accessToken = generateJWT(
@@ -206,6 +207,53 @@ export const passwordChangeController = async (
       accessToken,
       refreshToken,
       user,
+    })
+  );
+};
+
+export const refreshTokenController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const token = req.cookies.refresh_token;
+
+  if (!token)
+    return next(new AppError('UNAUTHORIZED', httpStatus.UNAUTHORIZED));
+
+  const user = await refreshTokenService(token);
+
+  const accessToken = generateJWT(
+    {
+      name: user.name,
+      userId: String(user._id),
+      role: user?.role || USER_ROLE.user,
+    },
+    env.ACCESS_TOKEN_SECRET,
+    env.ACCESS_TOKEN_EXPIRE
+  );
+  const refreshToken = generateJWT(
+    {
+      name: user.name,
+      userId: String(user._id),
+      role: user?.role || USER_ROLE.user,
+    },
+    env.REFRESH_TOKEN_SECRET,
+    env.REFRESH_TOKEN_EXPIRE
+  );
+
+  res.cookie('refresh_token', refreshToken, {
+    expires: new Date(
+      Date.now() + env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+    secure: req.secure,
+  });
+
+  res.json(
+    new APIResponse(httpStatus.CREATED, 'Password changed Successfully', {
+      accessToken,
+      refreshToken,
     })
   );
 };

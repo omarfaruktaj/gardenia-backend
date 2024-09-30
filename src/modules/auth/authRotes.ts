@@ -11,6 +11,7 @@ import {
 import {
   forgotPasswordController,
   passwordChangeController,
+  refreshTokenController,
   resetPasswordController,
   signInController,
   signOutController,
@@ -40,5 +41,6 @@ router.patch(
   validateRequest(changePasswordSchema),
   passwordChangeController
 );
+router.get('/refreshToken', refreshTokenController);
 
 export default router;

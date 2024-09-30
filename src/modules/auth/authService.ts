@@ -1,6 +1,6 @@
 import crypto from 'crypto';
 import httpStatus from 'http-status';
-import { ObjectId } from 'mongoose';
+import jwt from 'jsonwebtoken';
 import { Email } from '../../config/email';
 import env from '../../config/env';
 import AppError from '../../errors/app-error';
@@ -151,7 +151,7 @@ export const changePasswordService = async ({
   userId,
   currentPassword,
   newPassword,
-}: changePasswordSchemaType & { userId: ObjectId }) => {
+}: changePasswordSchemaType & { userId: string }) => {
   const user = await User.findById(userId).select('+password');
 
   if (!user) throw new AppError('No user found.', httpStatus.NOT_FOUND);
@@ -164,6 +164,18 @@ export const changePasswordService = async ({
 
   user.password = newPassword;
   await user.save();
+
+  return user;
+};
+interface DecodedToken {
+  userId: string;
+}
+export const refreshTokenService = async (token: string) => {
+  const decoded = jwt.verify(token, env.REFRESH_TOKEN_SECRET) as DecodedToken;
+  console.log(decoded);
+  const user = await User.findById(decoded.userId);
+
+  if (!user) throw new AppError('No user found', httpStatus.NOT_FOUND);
 
   return user;
 };
