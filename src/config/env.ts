@@ -14,6 +14,12 @@ const env = cleanEnv(process.env, {
   REFRESH_TOKEN_SECRET: str(),
   REFRESH_TOKEN_EXPIRE: str({ default: '7d' }),
   JWT_COOKIE_EXPIRES_IN: num({ default: 7 }),
+  EMAIL_HOST: str(),
+  EMAIL_PORT: num(),
+  EMAIL_USERNAME: str(),
+  EMAIL_PASSWORD: str(),
+  EMAIL_FROM: str(),
+  RESET_TOKEN_CLIENT_URL: str(),
 });
 
 export default env;

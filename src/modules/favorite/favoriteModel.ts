@@ -1,7 +1,7 @@
 import { model, Schema } from 'mongoose';
-import { IFavorite } from './favoriteInterface';
+import { FavoriteType } from './favoriteValidation';
 
-const FavoriteSchema: Schema = new Schema<IFavorite>(
+const FavoriteSchema: Schema = new Schema<FavoriteType>(
   {
     user: {
       type: Schema.Types.ObjectId,
@@ -17,6 +17,6 @@ const FavoriteSchema: Schema = new Schema<IFavorite>(
   { timestamps: true }
 );
 
-const Favorite = model<IFavorite>('Favorite', FavoriteSchema);
+const Favorite = model<FavoriteType>('Favorite', FavoriteSchema);
 
 export default Favorite;

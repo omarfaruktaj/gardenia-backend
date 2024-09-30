@@ -1,11 +1,12 @@
 import bcrypt from 'bcrypt';
+import crypto from 'crypto';
 import { model, Schema } from 'mongoose';
 import isEmail from 'validator/lib/isEmail';
 import makeFieldsPrivatePlugin from '../../lib/privateField';
-import { UserModel } from './userInterface';
+import { IUserMethods, UserModel } from './userInterface';
 import { UserType } from './userValidation';
 
-const userSchema = new Schema<UserType, UserModel>(
+const userSchema = new Schema<UserType, UserModel, IUserMethods>(
   {
     name: {
       type: String,
@@ -95,10 +96,36 @@ userSchema.pre('save', async function (next) {
 });
 
 userSchema.statics.correctPassword = async function (
-  candidatePassword,
-  userPassword
+  candidatePassword: string,
+  userPassword: string
 ) {
   return await bcrypt.compare(candidatePassword, userPassword);
 };
+
+userSchema.methods.changedPasswordAfter = function (
+  JWTTimestamp: number
+): boolean {
+  if (this.passwordChangedAt) {
+    const changedTimeStamp = Math.floor(
+      this.passwordChangedAt.getTime() / 1000
+    );
+    return JWTTimestamp < changedTimeStamp;
+  }
+  return false;
+};
+
+userSchema.methods.createPasswordResetToken = function () {
+  const resetToken = crypto.randomBytes(32).toString('hex');
+
+  this.passwordResetToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  this.passwordResetTokenExpire = new Date(Date.now() + 10 * 60 * 1000);
+
+  return resetToken;
+};
+
 const User = model<UserType, UserModel>('User', userSchema);
 export default User;
