@@ -6,7 +6,7 @@ import env from '../../config/env';
 import AppError from '../../errors/app-error';
 import { generateUniqueUsername } from '../../lib/generateUniqueUsername';
 import User from '../user/userModel';
-import { createUser, getAUser } from '../user/userService';
+import { getAUser } from '../user/userService';
 import {
   changePasswordSchemaType,
   forgotPasswordSchemaType,
@@ -21,14 +21,14 @@ export const signupService = async ({
   password,
   role,
 }: UserType) => {
-  const existedUser = await getAUser('email', email);
+  const existedUser = await User.findOne({ email });
 
   if (existedUser) throw new AppError('Use already exit.', httpStatus.CONFLICT);
 
   const baseUsername = name.split(' ').join('');
   const username = await generateUniqueUsername(baseUsername);
 
-  const user = await createUser({ name, email, password, username, role });
+  const user = await User.create({ name, email, password, username, role });
 
   return user;
 };

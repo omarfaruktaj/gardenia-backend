@@ -28,7 +28,10 @@ const authorizeWithRoles =
         )
       );
 
-    const decoded = jwt.verify(token, env.ACCESS_TOKEN_SECRET) as JwtPayload;
+    const decoded = (await jwt.verify(
+      token,
+      env.ACCESS_TOKEN_SECRET
+    )) as JwtPayload;
     const user = await getAUser('id', decoded.userId);
 
     if (!user) return next(new AppError('No user found', httpStatus.NOT_FOUND));

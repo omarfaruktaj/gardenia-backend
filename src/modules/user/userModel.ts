@@ -1,6 +1,6 @@
 import bcrypt from 'bcrypt';
 import crypto from 'crypto';
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 import isEmail from 'validator/lib/isEmail';
 import makeFieldsPrivatePlugin from '../../lib/privateField';
 import { IUserMethods, UserModel } from './userInterface';
@@ -37,7 +37,7 @@ const userSchema = new Schema<UserType, UserModel, IUserMethods>(
     password: {
       type: String,
       required: [true, 'Password is required.'],
-      minlength: [8, 'Password must be at least 8 characters long.'],
+      minlength: [6, 'Password must be at least 6 characters long.'],
       select: false,
     },
     bio: {
@@ -126,6 +126,16 @@ userSchema.methods.createPasswordResetToken = function () {
 
   return resetToken;
 };
+const filterDeleted = function (
+  this: mongoose.Query<UserType[], UserType>,
+  next: () => void
+) {
+  this.where({ isDeleted: false });
+  next();
+};
+
+userSchema.pre('find', filterDeleted);
+userSchema.pre('findOne', filterDeleted);
 
 const User = model<UserType, UserModel>('User', userSchema);
 export default User;

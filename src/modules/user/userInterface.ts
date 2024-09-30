@@ -11,5 +11,6 @@ export interface UserModel extends Model<UserType, object, IUserMethods> {
     candidatePassword: string,
     userPassword: string
   ): Promise<boolean>;
+  findDeleted(): Promise<UserType>;
 }
 export type TUserRoles = keyof typeof USER_ROLE;

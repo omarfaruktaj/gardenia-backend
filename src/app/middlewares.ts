@@ -5,7 +5,7 @@ import helmet from 'helmet';
 import morgan from 'morgan';
 
 const middlewares = [
-  cors({ credentials: true }),
+  cors(),
   express.json(),
   cookieParser(),
   helmet(),
