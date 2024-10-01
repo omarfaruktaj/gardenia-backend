@@ -26,6 +26,7 @@ const voteSchema = new Schema<VoteSchemaType>(
     timestamps: true,
   }
 );
+voteSchema.index({ post: 1, user: 1 }, { unique: true });
 
 const Vote = model<VoteSchemaType>('Vote', voteSchema);
 

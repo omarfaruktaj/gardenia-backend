@@ -20,7 +20,7 @@ export const PostSchema = z.object({
 
   author: ObjectIdSchema,
 
-  votes: z.number().default(0).optional(),
+  votes: z.number().default(0),
 
   premium: z.boolean().default(false).optional(),
   isDeleted: z.boolean().default(false),
