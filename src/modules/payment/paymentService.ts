@@ -1,6 +1,8 @@
 import env from '../../config/env';
 
 import Stripe from 'stripe';
+import Payment from './paymentModel';
+import { PaymentType } from './paymentValidation';
 
 const stripe = new Stripe(env.STRIPE_SECRET_KEY);
 
@@ -26,4 +28,11 @@ export const initiatePaymentService = async () => {
   });
 
   return session;
+};
+
+export const confirmPaymentService = async (data: PaymentType) => {
+  const payment = new Payment(data);
+
+  await payment.save();
+  return payment;
 };

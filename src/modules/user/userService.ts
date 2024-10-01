@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { Pagination } from '../../@types';
 import ApiFeatures, { QueryString } from '../../builder/APIFeature';
 import AppError from '../../errors/app-error';
+import Payment from '../payment/paymentModel';
 import Post from '../post/postModel';
 import User from './userModel';
 import { UserType, UserUpdateType } from './userValidation';
@@ -172,6 +173,14 @@ export const userVerifyService = async (userId: mongoose.Types.ObjectId) => {
   if (!eligible)
     throw new AppError(
       'You are not eligible for varification',
+      httpStatus.BAD_REQUEST
+    );
+
+  const payment = await Payment.findOne({ userId });
+
+  if (!payment)
+    throw new AppError(
+      'Please payment to veryfy your account.',
       httpStatus.BAD_REQUEST
     );
 
