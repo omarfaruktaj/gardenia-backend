@@ -10,9 +10,8 @@ const QuoteSchema: Schema = new Schema<QuoteType>(
       maxlength: [500, 'Quote text must not exceed 500 characters.'],
     },
     author: {
-      type: Schema.Types.ObjectId,
-      required: [true, 'Please provide the user ID.'],
-      ref: 'User',
+      type: String,
+      required: [true, 'Please provide the Author.'],
     },
     isDeleted: {
       type: Boolean,

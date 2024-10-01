@@ -4,6 +4,7 @@ import categoryRoutes from '../modules/category/categoryRoutes';
 import commentRoutes from '../modules/comment/commentRoutes';
 import favoriteRoutes from '../modules/favorite/favoriteRoutes';
 import postRoues from '../modules/post/postRoutes';
+import quoteRoues from '../modules/quote/quoteRoutes';
 import userRoues from '../modules/user/userRoues';
 
 const router = express.Router();
@@ -13,5 +14,6 @@ router.use('/posts', postRoues);
 router.use('/comments', commentRoutes);
 router.use('/favorites', favoriteRoutes);
 router.use('/categories', categoryRoutes);
+router.use('/quotes', quoteRoues);
 
 export default router;

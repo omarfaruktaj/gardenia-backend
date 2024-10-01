@@ -20,7 +20,7 @@ export const createCategoryController = async (
   const result = await CategorySchema.safeParseAsync(data);
   if (!result.success) return next(result.error);
 
-  const category = await createCategoryService(result.data).catch(next);
+  const category = await createCategoryService(result.data);
 
   res
     .status(httpStatus.CREATED)
@@ -71,28 +71,20 @@ export const getAllCategoriesController = async (
   );
 };
 
-export const getACategoryController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const getACategoryController = async (req: Request, res: Response) => {
   const categoryId = req.params.id;
 
-  const category = await getACategoryService(categoryId).catch(next);
+  const category = await getACategoryService(categoryId);
 
   res.json(
     new APIResponse(httpStatus.OK, 'Category retrieved successfully', category)
   );
 };
 
-export const deleteCategoryController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const deleteCategoryController = async (req: Request, res: Response) => {
   const categoryId = req.params.id;
 
-  const category = await deleteACategoryService(categoryId).catch(next);
+  const category = await deleteACategoryService(categoryId);
 
   res
     .status(httpStatus.OK)
