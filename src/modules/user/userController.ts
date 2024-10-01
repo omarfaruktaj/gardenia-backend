@@ -10,8 +10,10 @@ import {
   getAUser,
   getFollowersService,
   getFollowingService,
+  getVerificationStatusService,
   unfollowUserService,
   updateUserService,
+  userVerifyService,
 } from './userService';
 import { UserUpdateSchema } from './userValidation';
 
@@ -155,4 +157,39 @@ export const getFollowersController = async (
   res.json(
     new APIResponse(httpStatus.OK, `Following get successfully`, followers)
   );
+};
+
+export const getVerificationStatusController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = new mongoose.Types.ObjectId(req.params.id);
+
+  if (!userId)
+    return next(new AppError('Invalid request', httpStatus.BAD_REQUEST));
+
+  const result = await getVerificationStatusService(userId);
+
+  res.json(
+    new APIResponse(
+      httpStatus.OK,
+      `Verification Status get successfully`,
+      result
+    )
+  );
+};
+export const userVerifyController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = new mongoose.Types.ObjectId(req.params.id);
+
+  if (!userId)
+    return next(new AppError('Invalid request', httpStatus.BAD_REQUEST));
+
+  const result = await userVerifyService(userId);
+
+  res.json(new APIResponse(httpStatus.OK, `Successfully verified `, result));
 };

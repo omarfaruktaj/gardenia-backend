@@ -23,6 +23,10 @@ const env = cleanEnv(process.env, {
   CLOUDINARY_CLOUD_NAME: str(),
   CLOUDINARY_API_KEY: str(),
   CLOUDINARY_API_SECRET: str(),
+  STRIPE_SECRET_KEY: str(),
+  FRONTEND_URL: str({
+    default: 'http://localhost:3000',
+  }),
 });
 
 export default env;

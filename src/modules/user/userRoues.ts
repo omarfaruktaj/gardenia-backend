@@ -9,8 +9,10 @@ import {
   getFollowersController,
   getFollowingController,
   getMeController,
+  getVerificationStatusController,
   unfollowUserController,
   updateMeController,
+  userVerifyController,
 } from './userController';
 
 const router = express.Router();
@@ -46,6 +48,18 @@ router.get(
   '/:id/following',
   authorizeWithRoles('user', 'admin'),
   getFollowingController
+);
+
+// Varification actions
+router.get(
+  '/id/verification-status',
+  authorizeWithRoles('user', 'admin'),
+  getVerificationStatusController
+);
+router.get(
+  '/id/verify',
+  authorizeWithRoles('user', 'admin'),
+  userVerifyController
 );
 
 // Admin-only actions

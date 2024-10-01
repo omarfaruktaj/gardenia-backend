@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import { Pagination } from '../../@types';
 import ApiFeatures, { QueryString } from '../../builder/APIFeature';
 import AppError from '../../errors/app-error';
+import Post from '../post/postModel';
 import User from './userModel';
 import { UserType, UserUpdateType } from './userValidation';
 
@@ -140,4 +141,42 @@ export const getFollowingService = async (userId: mongoose.Types.ObjectId) => {
   if (!user) throw new Error('User not found');
 
   return user.followers;
+};
+
+export const getVerificationStatusService = async (
+  userId: mongoose.Types.ObjectId
+) => {
+  const user = await User.findById(userId);
+
+  if (!user) throw new AppError('No user found', httpStatus.NOT_FOUND);
+
+  const posts = await Post.find({ author: userId });
+  const votes = posts.reduce((total, post) => total + post.votes, 0);
+  const eligible = votes >= 1;
+
+  return {
+    eligible,
+    votes,
+  };
+};
+
+export const userVerifyService = async (userId: mongoose.Types.ObjectId) => {
+  const user = await User.findById(userId);
+
+  if (!user) throw new AppError('No user found', httpStatus.NOT_FOUND);
+
+  const posts = await Post.find({ author: userId });
+  const votes = posts.reduce((total, post) => total + post.votes, 0);
+  const eligible = votes >= 1;
+
+  if (!eligible)
+    throw new AppError(
+      'You are not eligible for varification',
+      httpStatus.BAD_REQUEST
+    );
+
+  user.isVerified = true;
+  await user.save();
+
+  return user;
 };
