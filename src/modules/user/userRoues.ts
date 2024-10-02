@@ -1,6 +1,7 @@
 import express from 'express';
 import { multerUpload } from '../../config/multer';
 import authorizeWithRoles from '../../middlewares/authorizeWithRoles';
+import { getPostsByUserController } from '../post/postController';
 import {
   deleteUserController,
   followUserController,
@@ -48,6 +49,13 @@ router.get(
   '/:id/following',
   authorizeWithRoles('user', 'admin'),
   getFollowingController
+);
+
+// user post
+router.get(
+  '/:id/posts',
+  authorizeWithRoles('user', 'admin'),
+  getPostsByUserController
 );
 
 // Varification actions

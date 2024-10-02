@@ -9,6 +9,7 @@ import { multerUpload } from './../../config/multer';
 import {
   createPostController,
   deletePostController,
+  feedController,
   getAllPostController,
   getAPostController,
   updatePostController,
@@ -17,6 +18,8 @@ import {
 const router = express.Router();
 
 router.use(authorizeWithRoles('admin', 'user'));
+
+router.get('/feed', feedController);
 
 router
   .route('/')

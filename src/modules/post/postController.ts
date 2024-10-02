@@ -1,11 +1,14 @@
-import { NextFunction, Request, RequestHandler, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
+import mongoose from 'mongoose';
 import APIResponse from '../../utils/APIResponse';
 import {
   createPostService,
   deleteAPostService,
+  FeedService,
   getAllPostService,
   getAPostService,
+  getPostByUserService,
   updatePostService,
 } from './postService';
 import { PostSchema, PostUpdateSchema } from './postValidation';
@@ -75,15 +78,53 @@ export const getAllPostController = async (req: Request, res: Response) => {
     )
   );
 };
+export const getPostsByUserController = async (req: Request, res: Response) => {
+  const userId = new mongoose.Types.ObjectId(req.params.id);
+  const currentUser = req.user?._id;
+  const query = req.query;
 
-export const getAPostController: RequestHandler = async (req, res) => {
+  const { posts, pagination } = await getPostByUserService(
+    currentUser!,
+    userId,
+    query
+  );
+
+  res.json(
+    new APIResponse(
+      httpStatus.OK,
+      'Posts retrieved successfully',
+      posts,
+      pagination
+    )
+  );
+};
+
+export const feedController = async (req: Request, res: Response) => {
+  const currentUser = req.user?._id;
+  const query = req.query;
+
+  const { posts, pagination } = await FeedService(currentUser!, query);
+
+  res.json(
+    new APIResponse(
+      httpStatus.OK,
+      'Feed posts retrieved successfully',
+      posts,
+      pagination
+    )
+  );
+};
+
+export const getAPostController = async (req: Request, res: Response) => {
   const postId = req.params.id;
-  const post = await getAPostService(postId);
+  const userId = req.user?._id;
+
+  const post = await getAPostService(userId!, postId);
 
   res.json(new APIResponse(httpStatus.OK, 'Post retrieved successfully', post));
 };
 
-export const deletePostController: RequestHandler = async (req, res) => {
+export const deletePostController = async (req: Request, res: Response) => {
   const postId = req.params.id;
 
   const post = await deleteAPostService(postId);

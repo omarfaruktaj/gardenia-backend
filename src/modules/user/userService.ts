@@ -1,5 +1,5 @@
 import httpStatus from 'http-status';
-import mongoose from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 import { Pagination } from '../../@types';
 import ApiFeatures, { QueryString } from '../../builder/APIFeature';
 import AppError from '../../errors/app-error';
@@ -188,4 +188,9 @@ export const userVerifyService = async (userId: mongoose.Types.ObjectId) => {
   await user.save();
 
   return user;
+};
+
+export const isUserVerified = async (userId: Types.ObjectId) => {
+  const user = await User.findById(userId);
+  return user && user.isVerified;
 };
