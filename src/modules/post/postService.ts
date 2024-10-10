@@ -4,6 +4,7 @@ import { Pagination, QueryString } from '../../@types';
 import ApiFeatures from '../../builder/APIFeature';
 import { monthNames } from '../../constant';
 import AppError from '../../errors/app-error';
+import User from '../user/userModel';
 import { isUserVerified } from '../user/userService';
 import Post from './postModel';
 import { PostType, PostUpdateSchemaType } from './postValidation';
@@ -42,7 +43,10 @@ export const getAPostService = async (userId: Types.ObjectId, id: string) => {
 
   if (!post) throw new AppError('No post found.', httpStatus.NOT_FOUND);
 
-  if (post.premium) {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError('User not found.', httpStatus.NOT_FOUND);
+
+  if (post.premium && user.role !== 'admin' && !user.isVerified) {
     if (!(await isUserVerified(userId))) {
       throw new AppError(
         'You do not have access to this post.',
@@ -50,7 +54,6 @@ export const getAPostService = async (userId: Types.ObjectId, id: string) => {
       );
     }
   }
-  console.log(post);
 
   return post;
 };
@@ -106,7 +109,6 @@ export const FeedService = async (
 ) => {
   const isVerified = userId ? await isUserVerified(userId) : false;
 
-  console.log(isVerified);
   const postsQuery = isVerified
     ? Post.find()
     : Post.find({ premium: { $ne: true } });
