@@ -3,33 +3,28 @@ import httpStatus from 'http-status';
 import AppError from '../../errors/app-error';
 import APIResponse from '../../utils/APIResponse';
 import {
-  createFavoriteService,
   deleteAFavoriteService,
   getAllFavoritesByUserService,
+  toggleFavoriteService,
 } from './favoriteService';
 import { FavoriteSchema } from './favoriteValidation';
 
-export const createFavoriteController = async (
+export const toggleFavoriteController = async (
   req: Request,
   res: Response,
   next: NextFunction
 ) => {
-  const userId = req.user?._id;
+  const userId = String(req.user?._id);
+  const postId = req.params.id;
 
-  if (!userId) {
-    return next(
-      new AppError('User not authenticated', httpStatus.UNAUTHORIZED)
-    );
-  }
-
-  const data = { ...req.body, user: userId };
+  const data = { post: postId, user: userId };
   const result = await FavoriteSchema.safeParseAsync(data);
 
   if (!result.success) {
     return next(new AppError(result.error.message, httpStatus.BAD_REQUEST));
   }
 
-  const favorite = await createFavoriteService(result.data);
+  const favorite = await toggleFavoriteService(result.data);
   res
     .status(httpStatus.CREATED)
     .json(
@@ -65,7 +60,7 @@ export const getFavoritesByUserController = async (
     );
   }
 
-  const { comments, pagination } = await getAllFavoritesByUserService(
+  const { favorites, pagination } = await getAllFavoritesByUserService(
     userId,
     req.query
   );
@@ -73,7 +68,7 @@ export const getFavoritesByUserController = async (
     new APIResponse(
       httpStatus.OK,
       'Favorites retrieved successfully',
-      comments,
+      favorites,
       pagination
     )
   );

@@ -2,8 +2,8 @@ import httpStatus from 'http-status';
 import mongoose, { Types } from 'mongoose';
 import { Pagination } from '../../@types';
 import ApiFeatures, { QueryString } from '../../builder/APIFeature';
+import { monthNames } from '../../constant';
 import AppError from '../../errors/app-error';
-import Payment from '../payment/paymentModel';
 import Post from '../post/postModel';
 import User from './userModel';
 import { UserType, UserUpdateType } from './userValidation';
@@ -24,9 +24,14 @@ export const updateUserService = async (
   userId: string,
   data: UserUpdateType
 ) => {
-  const existedUsername = await User.findOne({ username: data.username });
+  const existedUserWithUsername = await User.findOne({
+    username: data.username,
+  });
 
-  if (existedUsername)
+  if (
+    existedUserWithUsername &&
+    !(userId === String(existedUserWithUsername?._id))
+  )
     throw new AppError('Username already exist.', httpStatus.CONFLICT);
 
   const isUserExist = await User.findById(userId);
@@ -130,18 +135,117 @@ export const unfollowUserService = async (
   return userToUnfollow.username;
 };
 
-export const getFollowersService = async (userId: mongoose.Types.ObjectId) => {
-  const user = await User.findById(userId).populate('followers', 'username');
+export const getFollowersService = async (
+  userId: mongoose.Types.ObjectId,
+  query: QueryString
+) => {
+  const limit = Number(query.limit) || 10;
+  const page = Number(query.page) || 1;
+
+  const user = await User.findById(userId);
   if (!user) throw new Error('User not found');
 
-  return user.followers;
+  const totalFollowers = user.followers?.length || 0;
+
+  const totalPage = Math.ceil(totalFollowers / limit);
+  const pagination: Pagination = {
+    totalPage,
+    total: totalFollowers,
+    limit,
+    page,
+  };
+
+  if (page < totalPage) {
+    pagination.next = page + 1;
+  }
+
+  if (page > 1) {
+    pagination.prev = page - 1;
+  }
+
+  const skip = (page - 1) * limit;
+  const followers = await User.findById(userId).select('followers').populate({
+    path: 'followers',
+    options: {
+      limit,
+      skip,
+    },
+  });
+
+  return {
+    followers: followers?.followers,
+    pagination,
+  };
 };
 
-export const getFollowingService = async (userId: mongoose.Types.ObjectId) => {
-  const user = await User.findById(userId).populate('following', 'username');
+export const getMeService = async (userId: string) => {
+  const user = await User.findById(userId).populate('favorites');
+  return user;
+};
+
+export const getFollowingService = async (
+  userId: mongoose.Types.ObjectId,
+  query: QueryString
+) => {
+  const limit = Number(query.limit) || 10;
+  const page = Number(query.page) || 1;
+
+  const user = await User.findById(userId);
   if (!user) throw new Error('User not found');
 
-  return user.followers;
+  const totalFollowing = user.following?.length || 0;
+
+  const totalPage = Math.ceil(totalFollowing / limit);
+  const pagination: Pagination = {
+    totalPage,
+    total: totalFollowing,
+    limit,
+    page,
+  };
+
+  if (page < totalPage) {
+    pagination.next = page + 1;
+  }
+
+  if (page > 1) {
+    pagination.prev = page - 1;
+  }
+
+  const skip = (page - 1) * limit;
+  const following = await User.findById(userId).select('following').populate({
+    path: 'following',
+    options: {
+      limit,
+      skip,
+    },
+  });
+
+  return {
+    following: following?.following,
+    pagination,
+  };
+};
+
+export const getAUserWithVerificationEligible = async (userId: string) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError('No user found', httpStatus.NOT_FOUND);
+
+  let verificationEligible = false;
+
+  const posts = await Post.find({ author: user._id });
+
+  if (!user.isVerified) {
+    const votes = posts.reduce((total, post) => total + post.votes, 0);
+    verificationEligible = votes >= 1;
+  }
+
+  const userData = user.toObject();
+
+  return {
+    ...userData,
+    posts: posts.length,
+    verificationEligible,
+  };
 };
 
 export const getVerificationStatusService = async (
@@ -172,25 +276,47 @@ export const userVerifyService = async (userId: mongoose.Types.ObjectId) => {
 
   if (!eligible)
     throw new AppError(
-      'You are not eligible for varification',
+      'You are not eligible for verification',
       httpStatus.BAD_REQUEST
     );
+};
 
-  const payment = await Payment.findOne({ userId });
+export const changeRoleService = async (
+  userId: mongoose.Types.ObjectId,
+  data: { role: 'admin' | 'user' }
+) => {
+  const user = await User.findById(userId);
 
-  if (!payment)
-    throw new AppError(
-      'Please payment to veryfy your account.',
-      httpStatus.BAD_REQUEST
-    );
+  if (!user) throw new AppError('No user found', httpStatus.NOT_FOUND);
 
-  user.isVerified = true;
-  await user.save();
+  user.role = data.role;
 
-  return user;
+  const updatedUser = await user.save();
+  return updatedUser;
 };
 
 export const isUserVerified = async (userId: Types.ObjectId) => {
   const user = await User.findById(userId);
   return user && user.isVerified;
+};
+
+export const getUserActivityService = async () => {
+  const activities = await User.aggregate([
+    {
+      $group: {
+        _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } },
+        totalUsers: { $sum: 1 },
+      },
+    },
+    { $sort: { _id: 1 } },
+  ]);
+
+  return activities.map(({ _id, totalUsers }) => {
+    const [year, month] = _id.split('-');
+    return {
+      month: monthNames[parseInt(month, 10) - 1],
+      year,
+      totalUsers,
+    };
+  });
 };

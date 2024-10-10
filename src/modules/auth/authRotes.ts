@@ -41,6 +41,6 @@ router.patch(
   validateRequest(changePasswordSchema),
   passwordChangeController
 );
-router.get('/refreshToken', refreshTokenController);
+router.post('/refreshToken', refreshTokenController);
 
 export default router;

@@ -8,8 +8,8 @@ export const CategorySchema = z.object({
 
   description: z
     .string()
-    .max(500, { message: 'Description must be no more than 500 characters.' })
-    .optional(),
+    .min(1, { message: 'Description cannot be empty.' })
+    .max(500, { message: 'Description must be no more than 500 characters.' }),
   isDeleted: z.boolean().default(false),
 });
 export const CategoryUpdateSchema = z.object({
@@ -21,6 +21,7 @@ export const CategoryUpdateSchema = z.object({
 
   description: z
     .string()
+    .min(1, { message: 'Description cannot be empty.' })
     .max(500, { message: 'Description must be no more than 500 characters.' })
     .optional(),
 });

@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 import { QuoteType } from './quoteValidation';
 
 const QuoteSchema: Schema = new Schema<QuoteType>(
@@ -20,6 +20,17 @@ const QuoteSchema: Schema = new Schema<QuoteType>(
   },
   { timestamps: true }
 );
+
+const filterDeleted = function (
+  this: mongoose.Query<QuoteType[], QuoteType>,
+  next: () => void
+) {
+  this.where({ isDeleted: false });
+  next();
+};
+
+QuoteSchema.pre('find', filterDeleted);
+QuoteSchema.pre('findOne', filterDeleted);
 
 const Quote = model<QuoteType>('Quote', QuoteSchema);
 

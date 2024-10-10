@@ -48,6 +48,30 @@ const postSchema = new Schema<PostType>(
   }
 );
 
+postSchema.virtual('comments', {
+  ref: 'Comment',
+  foreignField: 'post',
+  localField: '_id',
+});
+postSchema.virtual('allVotes', {
+  ref: 'Vote',
+  foreignField: 'post',
+  localField: '_id',
+});
+
+const filterDeleted = function (
+  this: mongoose.Query<PostType[], PostType>,
+  next: () => void
+) {
+  this.where({ isDeleted: false });
+  next();
+};
+postSchema.set('toObject', { virtuals: true });
+postSchema.set('toJSON', { virtuals: true });
+
+postSchema.pre('find', filterDeleted);
+postSchema.pre('findOne', filterDeleted);
+
 const Post = model<PostType>('Post', postSchema);
 
 export default Post;

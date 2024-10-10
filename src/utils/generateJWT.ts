@@ -2,8 +2,12 @@ import jwt from 'jsonwebtoken';
 
 interface Payload {
   userId: string;
-  name: string;
-  role: string;
+  username?: string;
+  email?: string;
+  isVerified?: boolean;
+  avatar?: string;
+  name?: string;
+  role?: string;
 }
 
 const generateJWT = (data: Payload, secret: string, expireIn: string) => {

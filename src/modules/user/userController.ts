@@ -4,36 +4,38 @@ import mongoose from 'mongoose';
 import AppError from '../../errors/app-error';
 import APIResponse from '../../utils/APIResponse';
 import {
+  changeRoleService,
   deleteUserService,
   followUserService,
   getAllUserService,
   getAUser,
+  getAUserWithVerificationEligible,
   getFollowersService,
   getFollowingService,
+  getMeService,
+  getUserActivityService,
   getVerificationStatusService,
   unfollowUserService,
   updateUserService,
   userVerifyService,
 } from './userService';
-import { UserUpdateSchema } from './userValidation';
 
 export const getMeController = async (req: Request, res: Response) => {
-  res.json(new APIResponse(httpStatus.OK, 'get me successfully', req.user));
+  const me = await getMeService(String(req.user?._id));
+  res.json(new APIResponse(httpStatus.OK, 'get me successfully', me));
 };
 
-export const updateMeController = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const data = JSON.parse(req.body.data);
-  data.avatar = req.file?.path;
+export const updateMeController = async (req: Request, res: Response) => {
+  // const data = JSON.parse(req.body.data);
+  // data.avatar = req.file?.path;
 
-  const result = await UserUpdateSchema.safeParseAsync(data);
+  // const result = await UserUpdateSchema.safeParseAsync(data);
 
-  if (!result.success) {
-    return next(result.error);
-  }
+  // if (!result.success) {
+  //   return next(result.error);
+  // }
+
+  const data = req.body;
 
   const userId = req.user?._id;
 
@@ -58,6 +60,7 @@ export const getAllUserController: RequestHandler = async (req, res) => {
       )
     );
 };
+
 export const getAUserController: RequestHandler = async (req, res, next) => {
   const userId = req.params.id;
   const userData = await getAUser('id', userId);
@@ -71,6 +74,18 @@ export const getAUserController: RequestHandler = async (req, res, next) => {
       new APIResponse(httpStatus.OK, 'User retrieved successfully', userData)
     );
 };
+export const getAUserWithVerificationEligibleController: RequestHandler =
+  async (req, res) => {
+    const userId = req.params.id;
+    const userData = await getAUserWithVerificationEligible(userId);
+
+    res
+      .status(httpStatus.OK)
+      .json(
+        new APIResponse(httpStatus.OK, 'User retrieved successfully', userData)
+      );
+  };
+
 export const deleteUserController: RequestHandler = async (req, res) => {
   const userId = req.params.id;
 
@@ -118,11 +133,7 @@ export const unfollowUserController = async (
   const username = await unfollowUserService(currentUserId, userId);
 
   res.json(
-    new APIResponse(
-      httpStatus.CREATED,
-      `You are now unfollowed ${username}`,
-      null
-    )
+    new APIResponse(httpStatus.CREATED, `You are unfollowed ${username}`, null)
   );
 };
 
@@ -136,10 +147,16 @@ export const getFollowingController = async (
   if (!userId)
     return next(new AppError('Invalid request', httpStatus.BAD_REQUEST));
 
-  const following = await getFollowingService(userId);
+  const { following, pagination } = await getFollowingService(
+    userId,
+    req.query
+  );
 
   res.json(
-    new APIResponse(httpStatus.OK, `followinds get successfully`, following)
+    new APIResponse(httpStatus.OK, `Following get successfully`, {
+      following,
+      pagination,
+    })
   );
 };
 export const getFollowersController = async (
@@ -152,10 +169,16 @@ export const getFollowersController = async (
   if (!userId)
     return next(new AppError('Invalid request', httpStatus.BAD_REQUEST));
 
-  const followers = await getFollowersService(userId);
+  const { followers, pagination } = await getFollowersService(
+    userId,
+    req.query
+  );
 
   res.json(
-    new APIResponse(httpStatus.OK, `Following get successfully`, followers)
+    new APIResponse(httpStatus.OK, `Following get successfully`, {
+      followers,
+      pagination,
+    })
   );
 };
 
@@ -192,4 +215,31 @@ export const userVerifyController = async (
   const result = await userVerifyService(userId);
 
   res.json(new APIResponse(httpStatus.OK, `Successfully verified `, result));
+};
+
+export const getUserActivityController: RequestHandler = async (_req, res) => {
+  const users = await getUserActivityService();
+
+  res.json(
+    new APIResponse(httpStatus.OK, 'votes retrieved successfully', users)
+  );
+};
+
+export const changeRoleController = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  const userId = new mongoose.Types.ObjectId(req.params.id);
+  const data = req.body;
+  console.log(data);
+  if (data?.role !== 'user' && data.role !== 'admin') {
+    console.log(!(data?.role === 'user') || data.role === 'admin');
+    return next(
+      new AppError('Role must be user or admin', httpStatus.BAD_REQUEST)
+    );
+  }
+  const result = await changeRoleService(userId, data);
+
+  res.json(new APIResponse(httpStatus.OK, `Role changed successfully`, result));
 };

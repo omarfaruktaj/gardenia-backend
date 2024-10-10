@@ -13,7 +13,7 @@ const router = express.Router();
 router
   .route('/')
   .post(authorizeWithRoles('admin'), createCategoryController)
-  .get(authorizeWithRoles('user', 'admin'), getAllCategoriesController);
+  .get(getAllCategoriesController);
 
 router
   .route('/:id')

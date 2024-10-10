@@ -59,15 +59,13 @@ export const getAllCategoriesController = async (
   req: Request,
   res: Response
 ) => {
-  const { categories, pagination } = await getAllCategoriesService(req.query);
+  const { pagination, categories } = await getAllCategoriesService(req.query);
 
   res.json(
-    new APIResponse(
-      httpStatus.OK,
-      'Categories retrieved successfully',
+    new APIResponse(httpStatus.OK, 'Categories retrieved successfully', {
       categories,
-      pagination
-    )
+      pagination,
+    })
   );
 };
 

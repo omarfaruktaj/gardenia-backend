@@ -18,7 +18,7 @@ export const PostSchema = z.object({
     .optional()
     .default([]),
 
-  author: ObjectIdSchema,
+  author: ObjectIdSchema.optional(),
 
   votes: z.number().default(0),
 

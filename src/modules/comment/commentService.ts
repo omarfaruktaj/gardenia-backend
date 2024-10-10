@@ -77,7 +77,7 @@ export const getCommentByPostService = async (
     pagination.prev = Number(query.page) - 1;
   }
   console.log(postId, query);
-  const comments = await features.query;
+  const comments = await features.query.populate('user');
 
   return {
     comments,

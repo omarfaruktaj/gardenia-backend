@@ -6,10 +6,19 @@ import AppError from '../../errors/app-error';
 import Favorite from './favoriteModel';
 import { FavoriteType } from './favoriteValidation';
 
-export const createFavoriteService = async (data: FavoriteType) => {
-  const newFavorite = new Favorite(data);
-  await newFavorite.save();
-  return newFavorite;
+export const toggleFavoriteService = async (data: FavoriteType) => {
+  const existedFavorite = await Favorite.findOne({
+    user: data.user,
+    post: data.post,
+  });
+
+  if (existedFavorite) {
+    return Favorite.findByIdAndDelete(existedFavorite._id, { new: true });
+  } else {
+    const newFavorite = new Favorite(data);
+
+    return newFavorite.save();
+  }
 };
 
 export const getAllFavoritesByUserService = async (
@@ -41,9 +50,27 @@ export const getAllFavoritesByUserService = async (
     pagination.prev = pagination.page - 1;
   }
 
-  const comments = await features.query;
+  const favorites = await features.query
+    .populate({
+      path: 'post',
+      populate: [
+        {
+          path: 'author',
+        },
+        {
+          path: 'category',
+        },
+        {
+          path: 'comments',
+          select: '_id',
+        },
+      ],
+    })
+    .select('-_id -user -createdAt -updatedAt');
+
+  console.log(favorites);
   return {
-    comments,
+    favorites,
     pagination,
   };
 };

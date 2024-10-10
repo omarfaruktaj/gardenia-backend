@@ -25,6 +25,7 @@ export const UserSchema = z.object({
     .optional(),
 
   avatar: z.string().url({ message: 'Avatar must be a valid URL.' }).optional(),
+  cover: z.string().url({ message: 'cover must be a valid URL.' }).optional(),
 
   isVerified: z.boolean().optional().default(false).optional(),
 
@@ -54,12 +55,18 @@ export const UserUpdateSchema = z.object({
     .min(1, { message: 'Username is required.' })
     .max(30, { message: 'Username must be less than 30 characters.' })
     .optional(),
-
+  role: z
+    .enum(['user', 'admin'], {
+      message: "Role must be either 'user' or 'admin'.",
+    })
+    .default('user')
+    .optional(),
   bio: z
     .string()
     .max(300, { message: 'Bio must be less than 300 characters.' })
     .optional(),
   avatar: z.string().url({ message: 'Avatar must be a valid URL.' }).optional(),
+  cover: z.string().url({ message: 'cover must be a valid URL.' }).optional(),
 });
 export const signInSchema = z.object({
   email: z.string().email({ message: 'Invalid email address.' }),

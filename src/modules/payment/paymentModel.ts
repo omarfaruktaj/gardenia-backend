@@ -3,7 +3,7 @@ import { PaymentType } from './paymentValidation';
 
 const paymentSchema = new Schema<PaymentType>(
   {
-    userId: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       required: [true, 'Please provide the user ID.'],
       ref: 'User',

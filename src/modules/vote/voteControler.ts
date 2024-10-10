@@ -1,7 +1,7 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import httpStatus from 'http-status';
 import APIResponse from '../../utils/APIResponse';
-import { voteOnPostService } from './voteService';
+import { getMonthlyVotesService, voteOnPostService } from './voteService';
 import { voteSchema } from './voteValidation';
 
 export const voteOnPostController = async (
@@ -29,4 +29,12 @@ export const voteOnPostController = async (
   res
     .status(httpStatus.CREATED)
     .json(new APIResponse(httpStatus.CREATED, 'voted successfully', votedPost));
+};
+
+export const getMonthlyVotesController: RequestHandler = async (_req, res) => {
+  const votes = await getMonthlyVotesService();
+
+  res.json(
+    new APIResponse(httpStatus.OK, 'votes retrieved successfully', votes)
+  );
 };

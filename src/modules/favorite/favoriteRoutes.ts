@@ -1,7 +1,6 @@
 import { Router } from 'express';
 import authorizeWithRoles from '../../middlewares/authorizeWithRoles';
 import {
-  createFavoriteController,
   deleteFavoriteController,
   getFavoritesByUserController,
 } from './favoriteController';
@@ -9,12 +8,8 @@ import {
 const router = Router();
 
 router.use(authorizeWithRoles('admin', 'user'));
-router
-  .route('/')
-  .get(getFavoritesByUserController)
-  .post(createFavoriteController);
 
-router.delete('/:id');
+router.route('/').get(getFavoritesByUserController);
 
 router.route('/:id').delete(deleteFavoriteController);
 

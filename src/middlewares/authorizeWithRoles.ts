@@ -19,7 +19,7 @@ const authorizeWithRoles =
   async (req: Request, _res: Response, next: NextFunction) => {
     const token =
       req.headers.authorization && req.headers.authorization.split(' ')[1];
-
+    // console.log(req.headers);
     if (!token)
       return next(
         new AppError(

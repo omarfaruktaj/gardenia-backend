@@ -1,5 +1,5 @@
 {
-  "name": "node-app",
+  "name": "gardenia",
   "description": "",
   "version": "1.0.0",
   "main": "dist/server.js",

@@ -1,20 +1,24 @@
 import express from 'express';
-import { multerUpload } from '../../config/multer';
 import authorizeWithRoles from '../../middlewares/authorizeWithRoles';
+import validateRequest from '../../middlewares/validateRequest';
 import { getPostsByUserController } from '../post/postController';
 import {
+  changeRoleController,
   deleteUserController,
   followUserController,
   getAllUserController,
   getAUserController,
+  getAUserWithVerificationEligibleController,
   getFollowersController,
   getFollowingController,
   getMeController,
+  getUserActivityController,
   getVerificationStatusController,
   unfollowUserController,
   updateMeController,
   userVerifyController,
 } from './userController';
+import { UserUpdateSchema } from './userValidation';
 
 const router = express.Router();
 
@@ -23,9 +27,13 @@ router.get('/me', authorizeWithRoles('user', 'admin'), getMeController);
 router.patch(
   '/updateMe',
   authorizeWithRoles('user', 'admin'),
-  multerUpload.single('avatar'),
+  validateRequest(UserUpdateSchema),
+  // multerUpload.single('avatar'),
   updateMeController
 );
+
+router.get('/user-activity', getUserActivityController);
+router.get('/:id/status', getAUserWithVerificationEligibleController);
 
 // Follow/Unfollow actions
 router.post(
@@ -51,7 +59,7 @@ router.get(
   getFollowingController
 );
 
-// user post
+// user
 router.get(
   '/:id/posts',
   authorizeWithRoles('user', 'admin'),
@@ -60,19 +68,22 @@ router.get(
 
 // Varification actions
 router.get(
-  '/id/verification-status',
+  '/:id/verification-status',
   authorizeWithRoles('user', 'admin'),
   getVerificationStatusController
 );
 router.get(
-  '/id/verify',
+  '/:id/verify',
   authorizeWithRoles('user', 'admin'),
   userVerifyController
 );
 
 // Admin-only actions
-router.use(authorizeWithRoles('admin'));
-router.get('/', getAllUserController);
-router.route('/:id').get(getAUserController).delete(deleteUserController);
+router.get('/', authorizeWithRoles('admin'), getAllUserController);
+router
+  .route('/:id')
+  .patch(authorizeWithRoles('admin'), changeRoleController)
+  .get(authorizeWithRoles('user', 'admin'), getAUserController)
+  .delete(authorizeWithRoles('admin'), deleteUserController);
 
 export default router;

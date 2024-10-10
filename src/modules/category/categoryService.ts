@@ -39,23 +39,24 @@ export const getAllCategoriesService = async (query: QueryString) => {
     .limitFields()
     .paginate();
 
-  const total = await features.query.countDocuments();
+  const count = await Category.countDocuments();
+  const total = count || 0;
   const totalPage = Math.ceil(total / (Number(query.limit) || 10));
-
   const pagination: Pagination = {
     totalPage,
     total,
     limit: Number(query.limit) || 10,
     page: Number(query.page) || 1,
-    next:
-      (Number(query.page) || 1) < totalPage
-        ? (Number(query.page) || 1) + 1
-        : undefined,
-    prev: (Number(query.page) || 1) > 1 ? Number(query.page) - 1 : undefined,
   };
 
-  const categories = await features.query;
+  if (pagination.page < totalPage) {
+    pagination.next = pagination.page + 1;
+  }
+  if (pagination.page > 1) {
+    pagination.prev = pagination.page - 1;
+  }
 
+  const categories = await features.query;
   return {
     categories,
     pagination,

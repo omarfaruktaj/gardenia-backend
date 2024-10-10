@@ -22,16 +22,15 @@ export const signupService = async ({
   role,
 }: UserType) => {
   const existedUser = await User.findOne({ email });
-
   if (existedUser) throw new AppError('Use already exit.', httpStatus.CONFLICT);
 
   const baseUsername = name.split(' ').join('');
+
   const username = await generateUniqueUsername(baseUsername);
-
   const user = await User.create({ name, email, password, username, role });
-
   return user;
 };
+
 export const signInService = async ({ email, password }: SignInSchemaType) => {
   const user = await getAUser('email', email).select('+password');
 

@@ -1,18 +1,21 @@
-import { NextFunction, Request, Response } from 'express';
+import { NextFunction, Request, RequestHandler, Response } from 'express';
 import httpStatus from 'http-status';
 import AppError from '../../errors/app-error';
 import APIResponse from '../../utils/APIResponse';
 import {
   confirmPaymentService,
+  getAllPaymentsService,
+  getMonthlyPaymentsService,
   initiatePaymentService,
 } from './paymentService';
 import { PaymentSchema } from './paymentValidation';
 
 export const initiatePaymentController = async (
-  _req: Request,
+  req: Request,
   res: Response
 ) => {
-  const session = await initiatePaymentService();
+  const userId = req?.user?._id;
+  const session = await initiatePaymentService(String(userId));
   res
     .status(httpStatus.CREATED)
     .json(
@@ -33,7 +36,7 @@ export const confirmPaymentController = async (
 
   const data = req.body;
 
-  data.user = user;
+  data.user = String(user);
   data.paymentProvider = 'stripe';
 
   const result = await PaymentSchema.safeParseAsync(data);
@@ -42,7 +45,6 @@ export const confirmPaymentController = async (
     return next(new AppError(result.error.message, httpStatus.BAD_REQUEST));
   }
   const payment = await confirmPaymentService(req.body);
-
   res
     .status(httpStatus.CREATED)
     .json(
@@ -52,4 +54,26 @@ export const confirmPaymentController = async (
         payment
       )
     );
+};
+
+export const getAllPaymentsController = async (req: Request, res: Response) => {
+  const { pagination, payments } = await getAllPaymentsService(req.query);
+
+  res.json(
+    new APIResponse(httpStatus.OK, 'Payments retrieved successfully', {
+      payments,
+      pagination,
+    })
+  );
+};
+
+export const getMonthlyPaymentsController: RequestHandler = async (
+  _req,
+  res
+) => {
+  const payments = await getMonthlyPaymentsService();
+
+  res.json(
+    new APIResponse(httpStatus.OK, 'Payments retrieved successfully', payments)
+  );
 };

@@ -27,6 +27,8 @@ const env = cleanEnv(process.env, {
   FRONTEND_URL: str({
     default: 'http://localhost:3000',
   }),
+  SENDER_EMAIL: str(),
+  SENDER_APP_PASSWORD: str(),
 });
 
 export default env;

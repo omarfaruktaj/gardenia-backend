@@ -47,6 +47,9 @@ const userSchema = new Schema<UserType, UserModel, IUserMethods>(
     avatar: {
       type: String,
     },
+    cover: {
+      type: String,
+    },
     isVerified: {
       type: Boolean,
       default: false,
@@ -78,6 +81,11 @@ const userSchema = new Schema<UserType, UserModel, IUserMethods>(
   },
   { timestamps: true }
 );
+userSchema.virtual('favorites', {
+  ref: 'Favorite',
+  foreignField: 'user',
+  localField: '_id',
+});
 
 userSchema.plugin(makeFieldsPrivatePlugin, ['password']);
 
@@ -94,6 +102,9 @@ userSchema.pre('save', async function (next) {
   this.passwordChangedAt = new Date();
   next();
 });
+
+userSchema.set('toObject', { virtuals: true });
+userSchema.set('toJSON', { virtuals: true });
 
 userSchema.statics.correctPassword = async function (
   candidatePassword: string,

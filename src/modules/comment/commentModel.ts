@@ -37,6 +37,17 @@ const commentSchema = new Schema<CommentType>(
   }
 );
 
+const filterDeleted = function (
+  this: mongoose.Query<CommentType[], CommentType>,
+  next: () => void
+) {
+  this.where({ isDeleted: false });
+  next();
+};
+
+commentSchema.pre('find', filterDeleted);
+commentSchema.pre('findOne', filterDeleted);
+
 const Comment = model<CommentType>('Comment', commentSchema);
 
 export default Comment;

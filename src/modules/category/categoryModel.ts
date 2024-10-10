@@ -1,4 +1,4 @@
-import { model, Schema } from 'mongoose';
+import mongoose, { model, Schema } from 'mongoose';
 import { CategoryType } from './categoryValidation';
 
 const categorySchema = new Schema<CategoryType>(
@@ -28,6 +28,17 @@ const categorySchema = new Schema<CategoryType>(
     timestamps: true,
   }
 );
+
+const filterDeleted = function (
+  this: mongoose.Query<CategoryType[], CategoryType>,
+  next: () => void
+) {
+  this.where({ isDeleted: false });
+  next();
+};
+
+categorySchema.pre('find', filterDeleted);
+categorySchema.pre('findOne', filterDeleted);
 
 const Category = model<CategoryType>('Category', categorySchema);
 
